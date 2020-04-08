@@ -16,22 +16,21 @@
 var postorderTraversal = function(root) {
     var stack = [];
     var output = [];
-    var currentNode = root;
+    var currentNode = null;
+    
+    if (root !== null) {
+        stack.push(root);
+    }
         
-    while (currentNode !== null || stack.length > 0) {
-        while (currentNode !== null && !currentNode.processed) {
-            stack.push(currentNode);
-            currentNode = currentNode.left;
-        }
-        
+    while (stack.length > 0) {
         currentNode = stack.pop();
-        if (currentNode.right === null || currentNode.processed) {
-            output.push(currentNode.val);
-            currentNode = null;
-        } else {
-            currentNode.processed = true;
-            stack.push(currentNode);
-            currentNode = currentNode.right;
+        output.unshift(currentNode.val);
+        
+        if (currentNode.left !== null) {
+            stack.push(currentNode.left);
+        }
+        if (currentNode.right !== null) {
+            stack.push(currentNode.right);
         }
     }
     
