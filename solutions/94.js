@@ -16,25 +16,18 @@
 var inorderTraversal = function(root) {
     var stack = [];
     var output = [];
-    var currentNode = undefined;
+    var currentNode = root;
     
-    if (root !== null) {
-        stack.push(root);
-    }
-    
-    while (stack.length > 0) {
-        currentNode = stack.pop();
-        
-        if (currentNode.right !== null && !currentNode.processed) {
-            stack.push(currentNode.right);
-        }
-        if (currentNode.left !== null && !currentNode.processed) {
-            currentNode.processed = true;
+    while (currentNode !== null || stack.length > 0) {
+        while (currentNode !== null) {
             stack.push(currentNode);
-            stack.push(currentNode.left);
-        } else {
-            output.push(currentNode.val);
+            currentNode = currentNode.left;
         }
+        
+        currentNode = stack.pop();
+        output.push(currentNode.val);
+        
+        currentNode = currentNode.right;
     }
     
     return output;
