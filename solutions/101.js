@@ -18,45 +18,24 @@ var isSymmetric = function(root) {
         return true;
     }
 
-    // return isSymmetricRecursive(root);
+    // return isSymmetricRecursive(root, root);
     return isSymmetricIterative(root);
 };
 
 /***** START RECURSIVE SOLUTION *****/
 
 /**
- * @param {TreeNode} root
- * @return {number[]}
- */
-var getLeftBranchVals = function(root) {
-    if (root === null) {
-        return [null];
-    }
-    
-    return [root.val].concat(getLeftBranchVals(root.left), getLeftBranchVals(root.right));
-};
-
-/**
- * @param {TreeNode} root
- * @return {number[]}
- */
-var getRightBranchVals = function(root) {
-    if (root === null) {
-        return [null];
-    }
-    
-    return [root.val].concat(getRightBranchVals(root.right), getRightBranchVals(root.left));
-};
-
-/**
- * @param {TreeNode} root
+ * @param {TreeNode} t1
+ * @param {TreeNode} t2
  * @return {boolean}
  */
-var isSymmetricRecursive = function(root) {
-    var leftBranchVals = getLeftBranchVals(root.left);
-    var rightBranchVals = getRightBranchVals(root.right);
-
-    return JSON.stringify(leftBranchVals) === JSON.stringify(rightBranchVals);
+var isSymmetricRecursive = function(t1, t2) {
+    if (t1 === null && t2 === null) return true;
+    if (t1 === null || t2 === null) return false;
+    
+    return (t1.val === t2.val)
+        && isSymmetricRecursive(t1.left, t2.right)
+        && isSymmetricRecursive(t1.right, t2.left);
 };
 
 /***** END RECURSIVE SOLUTION *****/
@@ -68,38 +47,28 @@ var isSymmetricRecursive = function(root) {
  * @return {boolean}
  */
 var isSymmetricIterative = function(root) {
-    var leftBranchVals = [];
-    var rightBranchVals = [];
     var stack = [];
-    var currentNode = null;
+    var t1 = null;
+    var t2 = null;
     
-    // process left branch
-    stack.push(root.left);
+    stack.push(root);
+    stack.push(root);
+    
     while (stack.length > 0) {
-        currentNode = stack.pop();
-        if (currentNode !== null) {
-            leftBranchVals.push(currentNode.val);
-            stack.push(currentNode.right);
-            stack.push(currentNode.left);
-        } else {
-            leftBranchVals.push(null);
-        }
+        t1 = stack.pop();
+        t2 = stack.pop();
+        
+        if (t1 === null && t2 === null) continue;
+        if (t1 === null || t2 === null) return false;
+        if (t1.val !== t2.val) return false;
+        
+        stack.push(t1.left);
+        stack.push(t2.right);
+        stack.push(t1.right);
+        stack.push(t2.left);
     }
     
-    // process right branch
-    stack.push(root.right);
-    while (stack.length > 0) {
-        currentNode = stack.pop();
-        if (currentNode !== null) {
-            rightBranchVals.push(currentNode.val);
-            stack.push(currentNode.left);
-            stack.push(currentNode.right);
-        } else {
-            rightBranchVals.push(null);
-        }
-    }
-    
-    return JSON.stringify(leftBranchVals) === JSON.stringify(rightBranchVals);
+    return true;
 };
 
 /***** END ITERATIVE SOLUTION *****/
