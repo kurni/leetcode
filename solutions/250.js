@@ -18,13 +18,17 @@ var count = 0;
  */
 var countUnivalSubtrees = function(root) {
     count = 0;
-    countUnivalSubtreesRecursive(root);
+    isUnivalSubtree(root);
     
     return count;
 };
 
-var countUnivalSubtreesRecursive = function(root) {
-    if (root === null) return;
+var isUnivalSubtree = function(root) {
+    var isCurrentNodeUnival = false;
+    var isLeftSubtreeUnival = false;
+    var isRightSubtreeUnival = false;
+    
+    if (root === null) return true;
     
     if ((root.left === null && root.right === null)
         || (root.left !== null && root.right !== null && root.val === root.left.val
@@ -32,11 +36,16 @@ var countUnivalSubtreesRecursive = function(root) {
         || (root.left === null && root.right !== null && root.val === root.right.val)
         || (root.left !== null && root.right === null && root.val === root.left.val))
     {
-        count++;
+        isCurrentNodeUnival = true;
     }
     
-    countUnivalSubtreesRecursive(root.left);
-    countUnivalSubtreesRecursive(root.right);
+    isLeftSubtreeUnival = isUnivalSubtree(root.left);
+    isRightSubtreeUnival = isUnivalSubtree(root.right);
     
-    return;
+    if (isCurrentNodeUnival && isLeftSubtreeUnival && isRightSubtreeUnival) {
+        count++;
+        return true;
+    }
+    
+    return false;
 };
