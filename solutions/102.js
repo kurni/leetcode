@@ -1,6 +1,6 @@
 /**
  * https://leetcode.com/problems/binary-tree-level-order-traversal/
- * 102. Binary Tree Level Order Traversal
+ * 102. Binary Tree Level Order Traversal (Medium)
  */
 /**
  * Definition for a binary tree node.
