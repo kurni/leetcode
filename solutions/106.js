@@ -9,53 +9,44 @@
  *     this.left = this.right = null;
  * }
  */
+
+var globalInorder = null;
+var globalPostorder = null;
+var currentPostorderIndex = null;
+
+/**
+ * @param {number} inorderLeftBoundaryIndex
+ * @param {number} inorderRightBoundaryIndex
+ * @return {TreeNode}
+ */
+var buildNode = function(inorderLeftBoundaryIndex, inorderRightBoundaryIndex) {
+    if (currentPostorderIndex < 0 || inorderLeftBoundaryIndex > inorderRightBoundaryIndex) {
+        return null;
+    }
+    
+    var node = new TreeNode(globalPostorder[currentPostorderIndex]);
+    var currentInorderIndex = globalInorder.indexOf(globalPostorder[currentPostorderIndex]);
+    currentPostorderIndex--;
+    
+    node.right = buildNode(currentInorderIndex+1, inorderRightBoundaryIndex);
+    node.left = buildNode(inorderLeftBoundaryIndex, currentInorderIndex-1);
+    
+    return node;
+}
+
 /**
  * @param {number[]} inorder
  * @param {number[]} postorder
  * @return {TreeNode}
  */
 var buildTree = function(inorder, postorder) {
-    var nodes = [];
-    var nodeLength = inorder.length;
-    
-    if (nodeLength === 0) {
+    if (postorder.length === 0) {
         return null;
     }
     
-    // instantiate nodes
-    for (var i = 0; i < nodeLength; i++) {
-        nodes[i] = new TreeNode(inorder[i]);
-    }
+    globalInorder = inorder;
+    globalPostorder = postorder;
+    currentPostorderIndex = postorder.length-1;
     
-    // find parent with left child node
-    for (var i = 0; i < nodeLength-1; i++) {
-        if (postorder.indexOf(inorder[i]) < postorder.indexOf(inorder[i+1])) {
-            nodes[i+1].left = nodes[i];
-        }
-    }
-    
-    // find parent with right child node
-    for (var i = 0; i < nodeLength-1; i++) {
-        var childNodeIndex = inorder.indexOf(postorder[i]);
-        var parentNodeIndex = inorder.indexOf(postorder[i+1]);
-        if (parentNodeIndex < childNodeIndex) {
-            nodes[parentNodeIndex].right = nodes[childNodeIndex];
-        }
-    }
-    
-    // find top parent
-    var candidates = [];
-    for (var i = 0; i < nodeLength; i++) {
-        candidates.push(inorder[i]);
-    }
-    for (var i = 0; i < nodeLength; i++) {
-        if (nodes[i].left !== null) {
-            candidates = candidates.filter(x => x !== nodes[i].left.val);
-        }
-        if (nodes[i].right !== null) {
-            candidates = candidates.filter(x => x !== nodes[i].right.val);
-        }
-    }
-    
-    return nodes[inorder.indexOf(candidates[0])];
+    return buildNode(0, inorder.length-1);
 };
