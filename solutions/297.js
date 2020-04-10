@@ -10,6 +10,21 @@
  * }
  */
 
+var serializeOutput = [];
+
+var traverseTree = function(root) {
+    if (root === null) {
+        serializeOutput.push(null);
+        return true;
+    }
+    
+    serializeOutput.push(root.val);
+    traverseTree(root.left);
+    traverseTree(root.right);
+    
+    return true;
+};
+
 /**
  * Encodes a tree to a single string.
  *
@@ -17,53 +32,23 @@
  * @return {string}
  */
 var serialize = function(root) {
-    if (root === null) {
-        return JSON.stringify([]);
+    serializeOutput = [];
+    traverseTree(root);
+    
+    return JSON.stringify(serializeOutput);
+};
+
+var buildTree = function(data) {
+    var currentData = data.shift();
+    if (currentData === null) {
+        return null;
     }
     
-    var output = [];
-    var queue = [];
+    var node = new TreeNode(currentData);
+    node.left = buildTree(data);
+    node.right = buildTree(data);
     
-    output.push(root.val);
-    queue.push(root);
-    
-    while (queue.length > 0) {
-        var queueLength = queue.length;
-        var outputForNextLevel = [];
-        var validNodeCountInNextLevel = 0;
-        
-        for (var i = 0; i < queueLength; i++) {
-            var currentNode = queue.shift();
-            
-            // process left child node
-            if (currentNode.left !== null) {
-                outputForNextLevel.push(currentNode.left.val);
-                validNodeCountInNextLevel++;
-            } else {
-                outputForNextLevel.push(null);
-                currentNode.left = new TreeNode(null);
-            }
-            queue.push(currentNode.left);
-            
-            // process right child node
-            if (currentNode.right !== null) {
-                outputForNextLevel.push(currentNode.right.val);
-                validNodeCountInNextLevel++;
-            } else {
-                outputForNextLevel.push(null);
-                currentNode.right = new TreeNode(null);
-            }
-            queue.push(currentNode.right);            
-        }
-        
-        if (validNodeCountInNextLevel > 0) {
-            output = output.concat(outputForNextLevel);
-        } else {
-            break;
-        }
-    }
-    
-    return JSON.stringify(output);
+    return node;
 };
 
 /**
@@ -74,45 +59,8 @@ var serialize = function(root) {
  */
 var deserialize = function(data) {
     var parsedData = JSON.parse(data);
-    if (parsedData.length === 0) {
-        return null;
-    }
     
-    var output = new TreeNode(parsedData.shift());
-    var currentLevelStack = [ output ];
-    var nextLevelStack = [];
-    
-    while (parsedData.length > 0) {
-        while (currentLevelStack.length > 0) {
-            var currentNode = currentLevelStack.shift();
-            var leftNodeVal = parsedData.shift();
-            var rightNodeVal = parsedData.shift();
-            
-            if (currentNode !== null) {
-                if (leftNodeVal !== null && leftNodeVal !== undefined) {
-                    currentNode.left = new TreeNode(leftNodeVal);
-                    nextLevelStack.push(currentNode.left);
-                } else {
-                    nextLevelStack.push(null);
-                }
-                if (rightNodeVal !== null && rightNodeVal !== undefined) {
-                    currentNode.right = new TreeNode(rightNodeVal);
-                    nextLevelStack.push(currentNode.right);
-                } else {
-                    nextLevelStack.push(null);
-                }
-            } else {
-                nextLevelStack.push(null);
-                nextLevelStack.push(null);
-            }
-        }
-        
-        while (nextLevelStack.length > 0) {
-            currentLevelStack.push(nextLevelStack.shift());
-        }
-    }
-    
-    return output;
+    return buildTree(parsedData);
 };
 
 /**
