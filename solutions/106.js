@@ -12,7 +12,7 @@
 
 var globalInorder = null;
 var globalPostorder = null;
-var currentPostorderIndex = null;
+var currentPostorderIndex = 0;
 
 /**
  * @param {number} inorderLeftBoundaryIndex
